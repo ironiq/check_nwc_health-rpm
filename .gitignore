@@ -1,0 +1,8 @@
+# sources
+/check_nwc_health-*.tar.gz
+
+# build artifacts
+/check_nwc_health-*.src.rpm
+/.build-*.log
+/check_nwc_health-*/
+/noarch/

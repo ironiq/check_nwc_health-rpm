@@ -15,9 +15,18 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
+%if ! 0%{?suse_version}
+# Recreate OpenSUSE nagios-rpm-macros
+%global nagios_plugindir %{_libdir}/nagios/plugins
+%global nagios_user nagios
+%global nagios_group nagios
+%global nagios_plugindir %{_libdir}/nagios/plugins
+
+%endif
+
 Name:           check_nwc_health
-Version:        3.0i
-Release:        2.1
+Version:        3.0.3.7
+Release:        0%{?dist}
 License:        GPL-2.0+
 Summary:        Checks the hardware health of network components
 Url:            http://labs.consol.de/lang/de/nagios/check_nwc_health/
@@ -31,9 +40,11 @@ Requires:       perl(File::Basename)
 Requires:       perl(File::Path)
 Requires:       perl(Getopt::Long)
 Requires:       perl(IO::File)
-BuildRequires:  nagios-rpm-macros 
 BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  nagios-rpm-macros 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+%endif
 
 %description
 This plugin checks the hardware health and various interface metrics
@@ -63,15 +74,23 @@ make %{?_smp_mflags}
 %install
 %make_install
 mkdir -p %{buildroot}%{nagios_plugindir}
-mv  %{buildroot}%{_prefix}/lib/check_nwc_health %{buildroot}%{nagios_plugindir}/
+mv  %{buildroot}%{_libexecdir}/check_nwc_health %{buildroot}%{nagios_plugindir}/
 
 %files
 %defattr(-,root,root)
 %doc AUTHORS ChangeLog README COPYING THANKS TODO
+
+# RedHat doesn't allow multiple ownership of directories
+%if 0%{?suse_version}
 %dir %{nagios_libdir}
 %dir %{nagios_plugindir}
+%endif
 %{nagios_plugindir}/check_nwc_health
 
 %changelog
+* Wed Sep 10 2014 John Morris <john@zultron.com> - 3.0.3.7-0
+- Update to 3.0.3.7
+- Port to Red Hat
+
 * Sat Jul 26 2014 lars@linux-schulserver.de
 - initial version 3.0i
